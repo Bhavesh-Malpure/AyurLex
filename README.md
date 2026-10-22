@@ -39,6 +39,7 @@ Traditional research often leads to erroneous filings, severe Section 3(p) rejec
 | **DPDP Compliance** | Explicit user consent for paid-source integrations, strict data minimization, and audit logging with India-region data residency. |
 
 ---
+
 ## 🏛️ High-Level Architecture
 
 The platform operates across five coordinated layers: an accessible user interface, an intelligent orchestration layer, three parallel domain reasoning engines, a curated statutory corpus, and a comprehensive guardrail wrapper.
@@ -77,6 +78,7 @@ The platform operates across five coordinated layers: an accessible user interfa
 ```
 
 ---
+
 ## ✨ Key Capabilities
 
 ### 1. 🔍 Interactive Research Workspace
@@ -157,6 +159,7 @@ Ayurlex uses an intentional, accessible design system tailored for legal profess
 | **Compliance** | DPDP-Compliant Cloud (India) | Data residency, consent logging, and audit tracking |
 
 ---
+
 ## 📂 Repository Structure
 
 ```
@@ -236,7 +239,6 @@ uvicorn main:app --reload --port 8000
 ```
 Backend API health check is available at `http://localhost:8000/health`.
 
----
 ---
 
 ## 🗺️ Staged Roadmap
