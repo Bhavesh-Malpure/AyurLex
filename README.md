@@ -77,3 +77,83 @@ The platform operates across five coordinated layers: an accessible user interfa
 ```
 
 ---
+## ✨ Key Capabilities
+
+### 1. 🔍 Interactive Research Workspace
+- **Multi-Phase Status Animations**: Real-time feedback showing retrieval steps (*Searching ASU pharmacopoeias* ➔ *Analyzing Section 3(p) prior art* ➔ *Verifying Gazette notifications*).
+- **Statutory Citation Chips**: Interactive chips displaying document ID, title, section/rule locator, publication dates, and verified source links with modal drill-down.
+- **Confidence Badges**: Clear badges distinguishing *Statutorily Verified* provisions, *Secondary Commentaries*, and *Preliminary Inferences*.
+- **Explicit Abstention View**: Renders actionable guidance, query refinement advice, and human expert escalation when evidence is inconclusive.
+
+### 2. 🌿 5-Step Formulation Classification Wizard
+A guided statutory decision tree that evaluates:
+1. **First Schedule Inclusion**: Verification against the 54 classical authoritative texts of the Drugs & Cosmetics Act, 1940.
+2. **Botanical Origin**: Compliance with Ayurvedic Pharmacopoeia of India (API) monographs.
+3. **Extraction & Processing**: Classical aqueous kwatha processing vs. modern hydro-alcoholic or supercritical fluid fractions.
+4. **Therapeutic Claims**: Traditional textual indications (Rogadhikara) vs. modern disease claims.
+5. **Heavy Metal Bhasmas**: Rasashastra mineral compliance and Schedule E(1) safety thresholds.
+
+### 3. ⚖️ Comparative Jurisdiction Engine
+- **Explicit Side-by-Side Analysis**: Compares Indian domestic provisions with international IP norms:
+  - **Indian Patents Act Section 3(p)** vs. **EPO Article 54/56 & USPTO 35 U.S.C. 102/103**
+  - **Section 3(e) Synergistic Admixtures** vs. **PCT Unexpected Results standard**
+  - **Biological Diversity Act (BDA) Section 6 approval** vs. **Nagoya Protocol IRCC requirements**
+
+### 4. 🛡️ ABS & TKDL Compliance
+- **Biological Diversity Act (2023 Amendment) & 2024 Rules**: Automated tracking of National Biodiversity Authority (NBA) **Form I** (commercial access) and **Form III** (IPR prior approval).
+- **TKDL Prior-Art Guidance**: Scrutiny of classical recipes to evaluate Section 3(p) anticipation hurdles.
+
+### 5. 📊 Corpus Health & Administrative Monitoring
+- Live tracking of indexed statutory documents, pharmacopoeial volumes, Gazette sync dates, and version lineage (active vs. superseded statutes).
+
+---
+
+## 🎯 Formulation Classification Matrix
+
+Ayurlex uses a first-gate classification tree to assign formulations to specific statutory buckets, conditioning all downstream retrieval:
+
+| Formulation Bucket | Key Identifying Criteria | IP & Regulatory Pathway |
+|:---|:---|:---|
+| **Classical / Generic ASU** | Exact recipe in First Schedule texts (Charaka, Sushruta, AFI) | Section 3(p) patent bar; defend via TKDL; Rule 158B(I) clinical trial exemption. |
+| **Ayurvedic Proprietary Medicine** | Modified classical base or novel ratio under own brand name | Trademark + Rule 158B(IV) safety study; limited patent scope under Section 3(e). |
+| **New ASU Phytopharmaceutical** | Standardized fraction/extract with proven bioactive marker | CDSCO phytopharmaceutical pathway; patentable formulation dossier. |
+| **Ayurveda-Aahar / Nutraceutical** | Food/beverage with health claims derived from ASU botanicals | FSSAI regime (not drug IP); labeling and safety compliance. |
+| **Cosmetic Formulation** | Topical application for cleansing, beautifying, or grooming | Cosmetic Rules compliance; trademark & industrial design protection. |
+
+---
+
+## 🎨 Design System: Natural Green Minimalism
+
+Ayurlex uses an intentional, accessible design system tailored for legal professionals, researchers, and startups:
+
+```css
+:root {
+  --color-primary: #0F5132;        /* Primary green: major actions & brand header */
+  --color-secondary: #2E7D5B;      /* Secondary green: interactive accents & hovers */
+  --color-soft-green: #E8F5EE;     /* Highlighted panels & subtle backgrounds */
+  --color-background: #F7FAF8;     /* Neutral, calming application backdrop */
+  --color-surface: #FFFFFF;        /* Clean white surface cards & dialogs */
+  --color-text-primary: #1F2937;   /* High-contrast readable typography */
+  --color-text-secondary: #6B7280; /* Metadata, citations & helper text */
+  --color-border: #E5E7EB;         /* Subtle structural borders (no heavy shadows) */
+  --color-focus: #2E7D5B;          /* Accessible keyboard focus rings */
+}
+```
+
+---
+
+## 💻 Tech Stack
+
+| Domain | Technology / Library | Role in Ayurlex |
+|:---|:---|:---|
+| **Frontend** | React 19, TypeScript, Vite | Fast, accessible, typed client application |
+| **Icons & Styling** | Lucide React, Design-Token CSS | Restrained botanical iconography & responsive layout |
+| **Backend API** | FastAPI (Python 3.11+), Pydantic v2 | High-throughput asynchronous REST & SSE streaming |
+| **Orchestration** | LangGraph / Custom Agent Planner | Multi-step query decomposition & intent routing |
+| **Vector Database** | Qdrant / Weaviate / pgvector | Hybrid dense embeddings (BGE-M3 / Voyage) |
+| **Sparse Retrieval** | Elasticsearch / OpenSearch (BM25) | Exact statutory phrase & section matching |
+| **Knowledge Graph** | Neo4j (Phase 2) | Multi-hop relationships: Ingredients ↔ Formulations ↔ Patents |
+| **Multilingual** | Bhashini APIs (Phase 4) | ASR, TTS, and English/Hindi boundary translation |
+| **Compliance** | DPDP-Compliant Cloud (India) | Data residency, consent logging, and audit tracking |
+
+---
