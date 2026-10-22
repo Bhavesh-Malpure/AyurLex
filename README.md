@@ -237,3 +237,45 @@ uvicorn main:app --reload --port 8000
 Backend API health check is available at `http://localhost:8000/health`.
 
 ---
+---
+
+## 🗺️ Staged Roadmap
+
+```
+  ┌────────────────────────────────────────────────────────────────────────┐
+  │ [x] MVP (Current Phase)                                                │
+  │     • Natural Green Minimalism design system & responsive shell        │
+  │     • Persistent legal disclaimer banner (global + per substantive ans)│
+  │     • 5-step Formulation Classification Wizard                         │
+  │     • Side-by-side jurisdiction comparison (India vs. International)   │
+  │     • Statutory citation chips & accessible source details modal       │
+  │     • Confidence badges & explicit insufficient-evidence abstention    │
+  │     • Admin corpus freshness and source health overview               │
+  ├────────────────────────────────────────────────────────────────────────┤
+  │ [ ] Phase 2: Agentic Orchestration & Knowledge Graph                   │
+  │     • Neo4j Knowledge Graph connecting ingredients, formulations, laws │
+  │     • Automated NBA Form III & ABS check wizard                        │
+  │     • Authorized TKDL prior-art classification code search             │
+  │     • Human IP Facilitator handoff with conversation preview           │
+  ├────────────────────────────────────────────────────────────────────────┤
+  │ [ ] Phase 3: Paid-Source Connectors                                    │
+  │     • Commercial patent database connectors with explicit user consent│
+  │     • DPDP consent audit log & billing thresholds                      │
+  ├────────────────────────────────────────────────────────────────────────┤
+  │ [ ] Phase 4: Multilingual Voice & Case Law                             │
+  │     • Bhashini ASR/TTS voice input and speech synthesis                │
+  │     • High Court & Supreme Court ASU trademark/patent case law index   │
+  └────────────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## ⚖️ Statutory Disclaimer
+
+> **IMPORTANT NOTICE**: Ayurlex provides information strictly for research and educational purposes and does not provide legal advice. Intellectual property filings, patent claims, and regulatory licensing under the Drugs and Cosmetics Act, 1940 or Biological Diversity Act, 2002 require validation with qualified patent attorneys, registered patent agents, or the relevant State Licensing Authority (SLA).
+
+---
+
+<div align="center">
+  <p>Crafted with care for the Ayurvedic research & innovation ecosystem 🌿</p>
+</div>
