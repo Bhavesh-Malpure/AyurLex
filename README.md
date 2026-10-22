@@ -157,3 +157,83 @@ Ayurlex uses an intentional, accessible design system tailored for legal profess
 | **Compliance** | DPDP-Compliant Cloud (India) | Data residency, consent logging, and audit tracking |
 
 ---
+## 📂 Repository Structure
+
+```
+AyurLex/
+├── AGENTS.md                          # Engineering rules & design directives
+├── FRONTEND_PROGRESS.md               # Live 88-feature progress tracker (58% completed)
+├── BACKEND_HANDOFF.md                 # API contracts & schema specifications
+├── Ayurlex_Blueprint-3.pdf            # Master architecture & evaluation blueprint
+│
+├── frontend/                          # React 19 + TypeScript + Vite Application
+│   ├── src/
+│   │   ├── app/                       # Application shell & router
+│   │   ├── components/                # Layout, Header, Disclaimer, Language selector
+│   │   ├── features/
+│   │   │   ├── landing/               # Hero section & domain capability cards
+│   │   │   ├── chat/                  # Composer, MessageList, Status, useChatSession
+│   │   │   ├── answers/               # AnswerRenderer, CitationChip, ConfidenceBadge
+│   │   │   ├── classification/        # 5-step Formulation Classification Wizard
+│   │   │   ├── jurisdiction/          # India/Intl toggle & side-by-side comparison
+│   │   │   ├── sources/               # SourceDetailsPanel & accessible dialog modal
+│   │   │   ├── compliance/            # Biological Diversity (ABS) & TKDL guidance
+│   │   │   ├── admin/                 # CorpusOverviewCards & SourceHealthTable
+│   │   │   └── session/               # Reactive store & session type definitions
+│   │   ├── services/                  # Typed api-client.ts mediating backend requests
+│   │   ├── styles/                    # globals.css (Natural Green design tokens)
+│   │   └── main.tsx                   # React root entry
+│   ├── package.json
+│   ├── tsconfig.json
+│   └── vite.config.ts
+│
+├── backend/                           # FastAPI Backend Service
+│   ├── main.py                        # API routes, CORS & research query endpoint
+│   └── __pycache__/
+│
+└── ai/                                # AI Modules & Retrieval Orchestration
+    ├── ipr_classifier/                # IPR classification engine
+    ├── jurisdiction_manager/          # India vs International jurisdiction detector
+    ├── language_detector/             # Language detection module
+    ├── orchestrator/                  # Multi-step research planner agent
+    ├── query_analyzer/                # Ayurvedic intent analyzer
+    └── retriever/                     # Statutory source retrieval engine
+```
+
+---
+
+## 🚀 Getting Started
+
+### Prerequisites
+- **Node.js**: `v20.0.0` or higher (recommended: `v24.15.0`)
+- **Python**: `v3.11` or higher
+- **Package Managers**: `npm` and `pip`
+
+### 1. Frontend Setup & Launch
+```bash
+# Navigate to the frontend directory
+cd frontend
+
+# Install dependencies
+npm install
+
+# Start the Vite development server (port 5173)
+npm run dev
+
+# Run TypeScript checks and build production bundle
+npm run build
+```
+Once started, navigate to `http://localhost:5173` in your browser.
+
+### 2. Backend Setup & Launch
+```bash
+# In a separate terminal, install backend requirements
+cd backend
+pip install fastapi uvicorn pydantic
+
+# Start the FastAPI server (port 8000)
+uvicorn main:app --reload --port 8000
+```
+Backend API health check is available at `http://localhost:8000/health`.
+
+---
