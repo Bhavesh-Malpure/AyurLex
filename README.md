@@ -39,3 +39,41 @@ Traditional research often leads to erroneous filings, severe Section 3(p) rejec
 | **DPDP Compliance** | Explicit user consent for paid-source integrations, strict data minimization, and audit logging with India-region data residency. |
 
 ---
+## 🏛️ High-Level Architecture
+
+The platform operates across five coordinated layers: an accessible user interface, an intelligent orchestration layer, three parallel domain reasoning engines, a curated statutory corpus, and a comprehensive guardrail wrapper.
+
+```
+┌─────────────────────────────────────────────────────────────────────────┐
+│                          USER INTERFACE LAYER                           │
+│     Web & Mobile UI (React 19)  •  Natural Green Minimalism  •  i18n    │
+│                  Voice & Bhashini Multilingual (Phase 4)                │
+└────────────────────────────────────┬────────────────────────────────────┘
+                                     │
+┌────────────────────────────────────▼────────────────────────────────────┐
+│                           ORCHESTRATION LAYER                           │
+│   Intent Router  ──►  Formulation Classifier  ──►  Jurisdiction Router  │
+│                   Agent Planner (Multi-Step Reasoning)                  │
+└──────────────┬─────────────────────┬─────────────────────┬──────────────┘
+               │                     │                     │
+┌──────────────▼──────┐   ┌──────────▼──────────┐   ┌──────▼──────────────┐
+│      RAG CORE       │   │  ABS / TKDL HELPER  │   │   KNOWLEDGE GRAPH   │
+│  Hybrid Dense +     │   │  BDA 2023 / Rules   │   │  Ingredients ↔ Texts│
+│  BM25 Sparse +      │   │  NBA Form I/III     │   │  Patents ↔ Statutes │
+│  Citation Verifier  │   │  TKDL Prior-Art Map │   │  Multi-Hop Reasoning│
+└──────────────┬──────┘   └──────────┬──────────┘   └──────┬──────────────┘
+               │                     │                     │
+┌──────────────▼─────────────────────▼─────────────────────▼──────────────┐
+│                    CURATED, VERSION-TRACKED CORPUS                      │
+│   First Schedule Texts  •  API & AFI Pharmacopoeias  •  Gazettes        │
+│   Indian Patent Act  •  Drugs & Cosmetics Act  •  WIPO / EPO Treaties   │
+└────────────────────────────────────┬────────────────────────────────────┘
+                                     │
+┌────────────────────────────────────▼────────────────────────────────────┐
+│                           GUARDRAILS & AUDIT                            │
+│   Disclaimer Injection  •  Confidence Scorer  •  Abstention Engine     │
+│   Human IP Facilitator Escalation  •  DPDP Consent & Audit Logging      │
+└─────────────────────────────────────────────────────────────────────────┘
+```
+
+---
