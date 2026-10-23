@@ -279,5 +279,5 @@ Backend API health check is available at `http://localhost:8000/health`.
 ---
 
 <div align="center">
-  <p>Crafted with care for the Ayurvedic research & innovation ecosystem -- A project By Bhavesh Malpure and Team🌿</p>
+  <p>Crafted with care for the Ayurvedic research & innovation ecosystem 🌿</p>
 </div>
