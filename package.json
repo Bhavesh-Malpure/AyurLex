@@ -1,7 +1,7 @@
 {
-  "name": "y",
+  "name": "ayurlex",
   "version": "1.0.0",
-  "description": "[![License: Proprietary / Closed Source](https://img.shields.io/badge/License-Proprietary-blue.svg)](#)\r [![Python 3.11+](https://img.shields.io/badge/Python-3.11%2B-blue.svg)](https://www.python.org/)\r [![FastAPI](https://img.shields.io/badge/FastAPI-0.100%2B-009688.svg)](https://fastapi.tiangolo.com/)\r [![React](https://img.shields.io/badge/React-18%2B-61DAFB.svg)](https://react.dev/)\r [![Compliance](https://img.shields.io/badge/DPDP-Compliant-green.svg)](#)",
+  "description": "Ayurlex - AI-Powered Ayurveda Intellectual Property & Regulatory Intelligence Platform",
   "homepage": "https://github.com/vipulmali26/Ayurlex#readme",
   "bugs": {
     "url": "https://github.com/vipulmali26/Ayurlex/issues"
@@ -15,6 +15,9 @@
   "type": "commonjs",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "frontend": "npm run dev --prefix frontend",
+    "backend": "powershell -Command \"cd backend; .venv\\Scripts\\python.exe -m uvicorn main:app --reload --port 8000\"",
+    "build": "npm run build --prefix frontend",
+    "test": "powershell -Command \"cd backend; .venv\\Scripts\\python.exe test_retriever.py\""
   }
 }
