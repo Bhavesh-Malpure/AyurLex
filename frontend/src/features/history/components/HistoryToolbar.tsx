@@ -1,6 +1,6 @@
 import React from 'react';
-import { PlusCircle, RotateCcw, SplitSquareVertical } from 'lucide-react';
-import { sessionStore } from '../../session/sessionStore';
+import { PlusCircle, RotateCcw, SplitSquareVertical, Eye, EyeOff } from 'lucide-react';
+import { sessionStore, useSession } from '../../session/sessionStore';
 
 interface HistoryToolbarProps {
   onNewSession: () => void;
@@ -15,9 +15,15 @@ export const HistoryToolbar: React.FC<HistoryToolbarProps> = ({
   isComparisonActive,
   className = '',
 }) => {
+  const { showSources } = useSession();
+
   const handleNewResearch = () => {
     sessionStore.resetSession();
     onNewSession();
+  };
+
+  const handleToggleSources = () => {
+    sessionStore.toggleShowSources();
   };
 
   return (
@@ -53,6 +59,23 @@ export const HistoryToolbar: React.FC<HistoryToolbarProps> = ({
         >
           <SplitSquareVertical size={14} />
           <span>{isComparisonActive ? 'Close Comparison' : 'Compare Jurisdictions'}</span>
+        </button>
+
+        {/* Setting: Show Sources (default OFF) */}
+        <button
+          type="button"
+          onClick={handleToggleSources}
+          className={`btn ${showSources ? 'btn-primary' : 'btn-secondary'}`}
+          style={{
+            fontSize: '0.8125rem',
+            padding: '0.35rem 0.75rem',
+            backgroundColor: showSources ? 'var(--color-primary)' : 'var(--color-surface)',
+            color: showSources ? 'var(--color-text-inverse)' : 'var(--color-text-secondary)',
+          }}
+          title={showSources ? 'Citations visible. Click to hide.' : 'Citations hidden. Click to show.'}
+        >
+          {showSources ? <Eye size={14} /> : <EyeOff size={14} />}
+          <span>Show Sources: {showSources ? 'ON' : 'OFF'}</span>
         </button>
       </div>
 

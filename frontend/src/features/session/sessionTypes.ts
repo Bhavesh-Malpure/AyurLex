@@ -15,4 +15,5 @@ export interface SessionState {
   language: SupportedLanguage;
   classificationContext?: FormulationClassificationSummary;
   isComparisonActive: boolean;
+  showSources: boolean;
 }

@@ -14,6 +14,7 @@ const INITIAL_STATE: SessionState = {
   jurisdiction: 'india',
   language: 'en',
   isComparisonActive: false,
+  showSources: false,
 };
 
 let currentState: SessionState = { ...INITIAL_STATE };
@@ -43,6 +44,16 @@ export const sessionStore = {
     notify();
   },
 
+  setShowSources(showSources: boolean) {
+    currentState = { ...currentState, showSources };
+    notify();
+  },
+
+  toggleShowSources() {
+    currentState = { ...currentState, showSources: !currentState.showSources };
+    notify();
+  },
+
   setClassificationContext(context: FormulationClassificationSummary) {
     currentState = { ...currentState, classificationContext: context };
     notify();
@@ -54,6 +65,7 @@ export const sessionStore = {
       sessionId: generateSessionId(),
       jurisdiction: currentState.jurisdiction,
       language: currentState.language,
+      showSources: currentState.showSources,
     };
     notify();
   },

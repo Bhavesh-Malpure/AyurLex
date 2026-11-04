@@ -1,16 +1,14 @@
 import React from 'react';
 import { Citation } from '../../../services/api-client';
 import { CitationChip } from './CitationChip';
-import { ConfidenceBadge, ConfidenceLevel } from './ConfidenceBadge';
-import { AbstentionPanel } from './AbstentionPanel';
-import { AnswerMeta } from './AnswerMeta';
 import { DisclaimerBanner } from '../../../components/legal/DisclaimerBanner';
+import { useSession } from '../../session/sessionStore';
 
 export interface AnswerData {
   text?: string;
   isAbstained?: boolean;
   abstentionReason?: string;
-  confidence?: ConfidenceLevel;
+  confidence?: 'high' | 'medium' | 'low';
   citations: Citation[];
   asOfDate?: string;
   jurisdiction?: 'india' | 'international';
@@ -28,19 +26,31 @@ interface AnswerRendererProps {
 export const AnswerRenderer: React.FC<AnswerRendererProps> = ({
   answer,
   onCitationClick,
-  onRefineQuestion,
-  onEscalate,
   className = '',
 }) => {
+  const { showSources } = useSession();
+
   // If backend signaled abstention / insufficient evidence
   if (answer.isAbstained) {
     return (
-      <div className={className}>
-        <AbstentionPanel
-          reason={answer.abstentionReason}
-          onRefineQuestion={onRefineQuestion}
-          onEscalate={onEscalate}
-        />
+      <div
+        className={className}
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 'var(--space-3)',
+        }}
+      >
+        <div
+          style={{
+            fontSize: '0.95rem',
+            lineHeight: 1.7,
+            color: 'var(--color-text-primary)',
+            whiteSpace: 'pre-line',
+          }}
+        >
+          {answer.text || 'I could not verify a reliable answer from the available official research sources.'}
+        </div>
         <DisclaimerBanner variant="inline" />
       </div>
     );
@@ -48,7 +58,7 @@ export const AnswerRenderer: React.FC<AnswerRendererProps> = ({
 
   return (
     <article
-      aria-label="Substantive Research Answer"
+      aria-label="Researched Legal Answer"
       style={{
         display: 'flex',
         flexDirection: 'column',
@@ -56,26 +66,7 @@ export const AnswerRenderer: React.FC<AnswerRendererProps> = ({
       }}
       className={className}
     >
-      {/* Top Header: Confidence & Jurisdiction */}
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          flexWrap: 'wrap',
-          gap: 'var(--space-2)',
-          marginBottom: 'var(--space-1)',
-        }}
-      >
-        <ConfidenceBadge level={answer.confidence} />
-        {answer.language && (
-          <span className="badge badge-neutral text-xs">
-            Language: {answer.language.toUpperCase()}
-          </span>
-        )}
-      </div>
-
-      {/* Answer Body Text: readable typography */}
+      {/* 1. Direct Researched Answer (with Key Points & Practical Next Steps if present) */}
       <div
         style={{
           fontSize: '0.95rem',
@@ -84,11 +75,11 @@ export const AnswerRenderer: React.FC<AnswerRendererProps> = ({
           whiteSpace: 'pre-line',
         }}
       >
-        {answer.text || 'No substantive text provided by research retriever.'}
+        {answer.text || 'I could not verify a reliable answer from the available official research sources.'}
       </div>
 
-      {/* Citations Section */}
-      {answer.citations && answer.citations.length > 0 && (
+      {/* 2. Optional Sources: only shown when user explicitly enables "Show Sources" setting */}
+      {showSources && answer.citations && answer.citations.length > 0 && (
         <div
           style={{
             marginTop: 'var(--space-2)',
@@ -102,13 +93,11 @@ export const AnswerRenderer: React.FC<AnswerRendererProps> = ({
             style={{
               fontSize: '0.775rem',
               fontWeight: 600,
-              textTransform: 'uppercase',
-              letterSpacing: '0.04em',
               color: 'var(--color-text-secondary)',
               marginBottom: 'var(--space-2)',
             }}
           >
-            Statutory Citations & Authorities ({answer.citations.length})
+            Official Research Sources ({answer.citations.length})
           </div>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--space-2)' }}>
             {answer.citations.map((citation) => (
@@ -122,10 +111,7 @@ export const AnswerRenderer: React.FC<AnswerRendererProps> = ({
         </div>
       )}
 
-      {/* Answer Metadata: As-of Date & Verification */}
-      <AnswerMeta asOfDate={answer.asOfDate} jurisdiction={answer.jurisdiction} />
-
-      {/* Mandatory substantive answer disclaimer banner */}
+      {/* 3. Mandatory Persistent Legal Disclaimer */}
       <DisclaimerBanner variant="inline" />
     </article>
   );

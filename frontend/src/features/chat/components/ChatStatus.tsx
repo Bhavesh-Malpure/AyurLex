@@ -1,5 +1,5 @@
 import React from 'react';
-import { Loader2, Search, FileCheck, AlertCircle } from 'lucide-react';
+import { Loader2, AlertCircle } from 'lucide-react';
 
 export type ResearchStage = 'idle' | 'searching' | 'analyzing' | 'verifying_citations' | 'error';
 
@@ -37,7 +37,7 @@ export const ChatStatus: React.FC<ChatStatusProps> = ({
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}>
           <AlertCircle size={16} aria-hidden="true" />
-          <span>{errorMessage || 'Unable to retrieve statutory sources. Please try again.'}</span>
+          <span>{errorMessage || 'I could not verify a reliable answer from the available official research sources.'}</span>
         </div>
         {onRetry && (
           <button
@@ -52,17 +52,6 @@ export const ChatStatus: React.FC<ChatStatusProps> = ({
       </div>
     );
   }
-
-  const stageMessages: Record<ResearchStage, { text: string; icon: React.ElementType }> = {
-    idle: { text: '', icon: Loader2 },
-    searching: { text: 'Searching ASU pharmacopoeias & patent databases...', icon: Search },
-    analyzing: { text: 'Evaluating prior art & Section 3(p) statutory exclusions...', icon: Loader2 },
-    verifying_citations: { text: 'Verifying Gazette notifications & citation locators...', icon: FileCheck },
-    error: { text: '', icon: AlertCircle },
-  };
-
-  const current = stageMessages[stage] || stageMessages.searching;
-  const Icon = current.icon;
 
   return (
     <div
@@ -82,8 +71,8 @@ export const ChatStatus: React.FC<ChatStatusProps> = ({
       }}
       className={className}
     >
-      <Icon size={14} className="animate-spin" aria-hidden="true" />
-      <span>{current.text}</span>
+      <Loader2 size={14} className="animate-spin" aria-hidden="true" />
+      <span>Researching...</span>
       <style>{`
         @keyframes spin {
           from { transform: rotate(0deg); }
