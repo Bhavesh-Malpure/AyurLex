@@ -2,22 +2,27 @@
   "name": "ayurlex",
   "version": "1.0.0",
   "description": "Ayurlex - AI-Powered Ayurveda Intellectual Property & Regulatory Intelligence Platform",
-  "homepage": "https://github.com/vipulmali26/Ayurlex#readme",
+  "homepage": "https://github.com/Bhavesh-Malpure/AyurLex#readme",
   "bugs": {
-    "url": "https://github.com/vipulmali26/Ayurlex/issues"
+    "url": "https://github.com/Bhavesh-Malpure/AyurLex/issues"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/vipulmali26/Ayurlex.git"
+    "url": "git+https://github.com/Bhavesh-Malpure/AyurLex.git"
   },
   "license": "ISC",
-  "author": "",
+  "author": "Ayurlex Team",
   "type": "commonjs",
   "main": "index.js",
   "scripts": {
+    "dev": "npm run frontend",
+    "start": "npm run frontend",
     "frontend": "npm run dev --prefix frontend",
+    "frontend:build": "npm run build --prefix frontend",
     "backend": "powershell -Command \"cd backend; .venv\\Scripts\\python.exe -m uvicorn main:app --reload --port 8000\"",
     "build": "npm run build --prefix frontend",
-    "test": "powershell -Command \"cd backend; .venv\\Scripts\\python.exe test_retriever.py\""
+    "test": "powershell -Command \"cd backend; .venv\\Scripts\\python.exe -m unittest backend/test_acceptance_suite.py\"",
+    "test:acceptance": "powershell -Command \"cd backend; .venv\\Scripts\\python.exe -m unittest backend/test_acceptance_suite.py\"",
+    "test:verify": "powershell -Command \"& backend/.venv/Scripts/python.exe backend/verify_all.py\""
   }
 }

@@ -188,13 +188,23 @@ def validate_and_sanitize_citations(
     retrieved_chunks: list[dict],
 ) -> str:
     """
-    Remove internal source tags, citation brackets, and metadata markers
-    so user-facing answer text contains only the clean research answer.
+    Validates citation indices against retrieved evidence chunks.
+    Keeps legitimate [Source N] references where 1 <= N <= len(retrieved_chunks)
+    and strips phantom/hallucinated citations where N exceeds available evidence.
     """
-    # Strip any [Source N] or [Verified via: ...] tags
-    sanitized = re.sub(r"\[Source\s+\d+\]", "", answer_text, flags=re.IGNORECASE)
+    valid_count = len(retrieved_chunks)
+
+    def replacer(match: re.Match) -> str:
+        try:
+            source_idx = int(match.group(1))
+            if 1 <= source_idx <= valid_count:
+                return match.group(0)
+            return ""
+        except (ValueError, IndexError):
+            return ""
+
+    sanitized = re.sub(r"\[Source\s+(\d+)\]", replacer, answer_text, flags=re.IGNORECASE)
     sanitized = re.sub(r"\[Verified via:[^\]]+\]", "", sanitized, flags=re.IGNORECASE)
-    # Clean up double spaces or dangling punctuation left by removed citation tags
     sanitized = re.sub(r"[ \t]+", " ", sanitized)
     sanitized = re.sub(r"\s+\.", ".", sanitized)
     return sanitized.strip()

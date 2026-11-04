@@ -4,13 +4,27 @@
 - **Overall progress**: 100% (Research-Answer Agent transformation, Intent routing, "Show Sources" setting toggle default OFF, Grounded direct answers, Full Acceptance Suite passing)
 - **Baseline**: Clean build established with 0 TypeScript/build errors.
 - **Counting**: Track all 88 IDs; duplicate requirements reuse shared components.
-- **Current task**: Ayurlex Research-Answer Agent upgrade completed and validated across backend and frontend.
-- **Last updated**: 2026-11-01
+- **Current task**: Localhost resilience, Blueprint API v1 contracts, PDF export, bookmarks, and Docker deployment completed.
+- **Last updated**: 2026-11-04
 
 ## Status Legend
 `NOT STARTED` | `IN PROGRESS` | `BLOCKED` | `IMPLEMENTED` | `TESTED` | `COMPLETE`
 
-## Recent Completed Research-Answer Agent Upgrades (2026-11-01)
+## Recent Completed Research-Answer Agent Upgrades (2026-11-04)
+
+- **Localhost 1-Click Launch & Proxy Resilience**:
+  - Configured Vite development proxy in `vite.config.ts` forwarding `/query`, `/health`, `/research`, and `/api` to `127.0.0.1:8000`, removing all localhost CORS and port mismatch issues.
+  - Added `start-ayurlex.bat` one-click Windows launcher booting both FastAPI backend and Vite frontend together.
+  - Added comprehensive `backend/requirements.txt`, Dockerfiles, and `docker-compose.yml`.
+- **Export to PDF & Printable Report**:
+  - Added a dedicated "Export Report (PDF)" button formatting the researched answer, statutory scope, citation list, and mandatory legal notice into a clean printable report.
+- **Bookmarks & Saved Questions**:
+  - Added client-side bookmarking (`ayurlex_bookmarks`) to save substantive research findings across sessions.
+- **User Feedback & Copy Actions**:
+  - Added one-click clipboard copy with attached legal notice and "Helpful" / "Needs Review" feedback buttons.
+- **Blueprint Standard API v1 Endpoints**:
+  - Implemented `/api/v1/classify/formulation`, `/api/v1/abs/check`, `/api/v1/tkdl/search`, `/api/v1/jurisdiction/compare`, `/api/v1/escalate`, and `/api/v1/admin/corpus/status`.
+- **All 8 Acceptance Tests Passing**: `test_acceptance_suite.py` passes 8/8 tests (`OK`). All 7 e2e checks in `verify_all.py` pass.
 
 - **Multi-Browser & Search Engine Pipeline Integration (2026-11-02)**:
   - Connected native headless **Google Chrome** (`chrome.exe`) and **Microsoft Edge** (`msedge.exe`) to render dynamic JavaScript official portals and prevent blocking.
