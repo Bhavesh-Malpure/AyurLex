@@ -1,11 +1,12 @@
 import React from 'react';
-import { PlusCircle, RotateCcw, SplitSquareVertical, Eye, EyeOff } from 'lucide-react';
+import { PlusCircle, RotateCcw, SplitSquareVertical, Eye, EyeOff, Calculator } from 'lucide-react';
 import { sessionStore, useSession } from '../../session/sessionStore';
 
 interface HistoryToolbarProps {
   onNewSession: () => void;
   onToggleComparison: () => void;
   isComparisonActive: boolean;
+  onOpenTools?: () => void;
   className?: string;
 }
 
@@ -13,6 +14,7 @@ export const HistoryToolbar: React.FC<HistoryToolbarProps> = ({
   onNewSession,
   onToggleComparison,
   isComparisonActive,
+  onOpenTools,
   className = '',
 }) => {
   const { showSources } = useSession();
@@ -60,6 +62,25 @@ export const HistoryToolbar: React.FC<HistoryToolbarProps> = ({
           <SplitSquareVertical size={14} />
           <span>{isComparisonActive ? 'Close Comparison' : 'Compare Jurisdictions'}</span>
         </button>
+
+        {onOpenTools && (
+          <button
+            type="button"
+            onClick={onOpenTools}
+            className="btn btn-secondary"
+            style={{
+              fontSize: '0.8125rem',
+              padding: '0.35rem 0.75rem',
+              borderColor: 'var(--color-primary)',
+              color: 'var(--color-primary)',
+              fontWeight: 600,
+            }}
+            title="Open Academic Search, Statutory Deadline & Fee Calculators, and Vector Retrieval"
+          >
+            <Calculator size={14} />
+            <span>Research Tools</span>
+          </button>
+        )}
 
         {/* Setting: Show Sources (default OFF) */}
         <button

@@ -33,6 +33,10 @@ from intent_classifier import (
 )
 from research_agent import get_live_research_chunks
 from retriever import search_chunks
+from connectors.academic_search import search_academic_papers
+from connectors.web_search_connector import execute_deep_web_search
+from statutory_calculator import calculate_patent_deadlines, calculate_patent_fees
+from vector_search import hybrid_search, vector_semantic_search
 from schemas import (
     ConnectSourceRequest,
     ConnectSourceResponse,
@@ -1386,3 +1390,92 @@ def api_v1_admin_corpus_status():
         ],
         "disclaimer": "Ayurlex provides information for research purposes and does not provide legal advice.",
     }
+
+
+# =====================================================================
+# Additional Advanced Research Tools: Academic, Web, Vector & Statutory
+# =====================================================================
+
+class AcademicSearchReq(BaseModel):
+    query: str
+    max_results: int = 6
+
+class WebSearchReq(BaseModel):
+    query: str
+    jurisdiction: str = "india"
+    max_results: int = 5
+
+class DeadlineCalcReq(BaseModel):
+    filing_date: str # YYYY-MM-DD
+
+class FeeCalcReq(BaseModel):
+    applicant_type: str = "natural_person"
+    pages_count: int = 30
+    claims_count: int = 10
+    is_e_filing: bool = True
+    include_early_publication: bool = False
+    include_expedited_exam: bool = False
+
+class VectorSearchReq(BaseModel):
+    query: str
+    jurisdiction: str = "india"
+    top_k: int = 6
+
+
+@app.post("/api/v1/academic/search")
+def api_v1_academic_search(req: AcademicSearchReq):
+    """Search academic databases (PubMed, Crossref, Semantic Scholar) for clinical evidence & Ayurvedic literature."""
+    papers = search_academic_papers(req.query, max_results=req.max_results)
+    return {
+        "query": req.query,
+        "results_count": len(papers),
+        "papers": papers,
+        "disclaimer": "Ayurlex provides academic research citations for reference and does not provide medical or legal advice.",
+    }
+
+
+@app.post("/api/v1/tools/web-search")
+def api_v1_web_search(req: WebSearchReq):
+    """Deep web research tool combining official gov search with Tavily/Google Search API fallback."""
+    results = execute_deep_web_search(req.query, jurisdiction=req.jurisdiction, max_results=req.max_results)
+    return {
+        "query": req.query,
+        "jurisdiction": req.jurisdiction,
+        "results_count": len(results),
+        "results": results,
+        "disclaimer": "Ayurlex provides information for research purposes and does not provide legal advice.",
+    }
+
+
+@app.post("/api/v1/tools/calculate-deadlines")
+def api_v1_calculate_deadlines(req: DeadlineCalcReq):
+    """Statutory deadline calculator under Indian Patent Act and amended Rules 2024."""
+    return calculate_patent_deadlines(req.filing_date)
+
+
+@app.post("/api/v1/tools/calculate-fees")
+def api_v1_calculate_fees(req: FeeCalcReq):
+    """Statutory patent fee calculator according to First Schedule, Indian Patent Rules."""
+    return calculate_patent_fees(
+        applicant_type=req.applicant_type,
+        pages_count=req.pages_count,
+        claims_count=req.claims_count,
+        is_e_filing=req.is_e_filing,
+        include_early_publication=req.include_early_publication,
+        include_expedited_exam=req.include_expedited_exam,
+    )
+
+
+@app.post("/api/v1/tools/vector-search")
+def api_v1_vector_search(req: VectorSearchReq):
+    """Hybrid semantic vector retrieval blending dense embeddings and sparse BM25 scoring."""
+    results = hybrid_search(req.query, jurisdiction=req.jurisdiction, top_k=req.top_k)
+    return {
+        "query": req.query,
+        "jurisdiction": req.jurisdiction,
+        "retrieval_mode": "hybrid_dense_sparse_fusion",
+        "results_count": len(results),
+        "chunks": results,
+        "disclaimer": "Ayurlex provides information for research purposes and does not provide legal advice.",
+    }
+

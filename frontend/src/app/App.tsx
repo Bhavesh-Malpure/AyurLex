@@ -13,12 +13,14 @@ import { SourceDetailsDialog } from '../features/sources/components/SourceDetail
 import { CorpusOverviewCards } from '../features/admin/components/CorpusOverviewCards';
 import { SourceHealthTable } from '../features/admin/components/SourceHealthTable';
 import { ComplianceOverview } from '../features/compliance/ComplianceOverview';
+import { ResearchToolsModal } from '../features/tools/ResearchToolsModal';
 import { useChatSession } from '../features/chat/useChatSession';
 import { useSession } from '../features/session/sessionStore';
 
 export const App: React.FC = () => {
   const [currentRoute, setCurrentRoute] = useState<string>('landing');
   const [isComparisonOpen, setIsComparisonOpen] = useState(false);
+  const [isToolsModalOpen, setIsToolsModalOpen] = useState(false);
 
   const {
     messages,
@@ -78,6 +80,7 @@ export const App: React.FC = () => {
               onNewSession={clearMessages}
               onToggleComparison={handleToggleComparison}
               isComparisonActive={isComparisonOpen}
+              onOpenTools={() => setIsToolsModalOpen(true)}
             />
 
             {/* Jurisdiction Comparison View (F11) if toggled */}
@@ -158,6 +161,11 @@ export const App: React.FC = () => {
         citation={selectedCitation}
         isOpen={isCitationDialogOpen}
         onClose={closeCitation}
+      />
+
+      <ResearchToolsModal
+        isOpen={isToolsModalOpen}
+        onClose={() => setIsToolsModalOpen(false)}
       />
 
       {/* Footer */}

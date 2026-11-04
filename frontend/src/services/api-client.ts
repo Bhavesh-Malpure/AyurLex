@@ -337,6 +337,72 @@ class ApiClient {
     if (!res.ok) throw new Error(`Escalation failed: ${res.status}`);
     return await res.json();
   }
+
+  /**
+   * Academic & Clinical Paper Search (PubMed, Crossref, Semantic Scholar)
+   */
+  async searchAcademicPapers(query: string, maxResults: number = 6): Promise<any> {
+    const res = await this.safeFetch('/api/v1/academic/search', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ query, max_results: maxResults }),
+    });
+    if (!res.ok) throw new Error(`Academic search failed: ${res.status}`);
+    return await res.json();
+  }
+
+  /**
+   * Statutory Patent Deadline Calculator (Indian Patent Act & 2024 Amendment Rules)
+   */
+  async calculateDeadlines(filingDate: string): Promise<any> {
+    const res = await this.safeFetch('/api/v1/tools/calculate-deadlines', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ filing_date: filingDate }),
+    });
+    if (!res.ok) throw new Error(`Deadline calculation failed: ${res.status}`);
+    return await res.json();
+  }
+
+  /**
+   * Statutory Patent Fee Calculator (First Schedule, Indian Patent Rules)
+   */
+  async calculateFees(params: {
+    applicantType?: string;
+    pagesCount?: number;
+    claimsCount?: number;
+    isEFiling?: boolean;
+    includeEarlyPub?: boolean;
+    includeExpeditedExam?: boolean;
+  }): Promise<any> {
+    const res = await this.safeFetch('/api/v1/tools/calculate-fees', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        applicant_type: params.applicantType || 'natural_person',
+        pages_count: params.pagesCount || 30,
+        claims_count: params.claimsCount || 10,
+        is_e_filing: params.isEFiling ?? true,
+        include_early_publication: params.includeEarlyPub ?? false,
+        include_expedited_exam: params.includeExpeditedExam ?? false,
+      }),
+    });
+    if (!res.ok) throw new Error(`Fee calculation failed: ${res.status}`);
+    return await res.json();
+  }
+
+  /**
+   * Hybrid Vector Retrieval (Dense Vector + Sparse BM25 Fusion)
+   */
+  async searchVector(query: string, jurisdiction: string = 'india', topK: number = 6): Promise<any> {
+    const res = await this.safeFetch('/api/v1/tools/vector-search', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ query, jurisdiction, top_k: topK }),
+    });
+    if (!res.ok) throw new Error(`Vector search failed: ${res.status}`);
+    return await res.json();
+  }
 }
 
 export const apiClient = new ApiClient(API_BASE_URL);
