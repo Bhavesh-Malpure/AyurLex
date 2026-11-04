@@ -25,3 +25,4 @@ echo   Backend API: http://localhost:8000/docs
 echo ===================================================
 echo Opening Ayurlex in default browser...
 start http://localhost:5173
+

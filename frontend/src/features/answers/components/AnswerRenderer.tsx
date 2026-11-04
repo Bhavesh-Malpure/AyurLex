@@ -3,7 +3,7 @@ import { Citation } from '../../../services/api-client';
 import { CitationChip } from './CitationChip';
 import { DisclaimerBanner } from '../../../components/legal/DisclaimerBanner';
 import { useSession } from '../../session/sessionStore';
-import { Printer, ThumbsUp, ThumbsDown, Copy, Check, Bookmark, BookmarkCheck } from 'lucide-react';
+import { Printer, ThumbsUp, ThumbsDown, Copy, Check, Bookmark, BookmarkCheck, Volume2, VolumeX } from 'lucide-react';
 
 export interface AnswerData {
   text?: string;
@@ -33,6 +33,41 @@ export const AnswerRenderer: React.FC<AnswerRendererProps> = ({
   const [copied, setCopied] = useState(false);
   const [feedback, setFeedback] = useState<'helpful' | 'not_helpful' | null>(null);
   const [isBookmarked, setIsBookmarked] = useState(false);
+  const [isSpeaking, setIsSpeaking] = useState(false);
+
+  const handleToggleSpeech = () => {
+    if (typeof window === 'undefined' || !('speechSynthesis' in window)) {
+      alert('Speech synthesis is not supported in this browser.');
+      return;
+    }
+
+    if (isSpeaking) {
+      window.speechSynthesis.cancel();
+      setIsSpeaking(false);
+      return;
+    }
+
+    if (!answer.text) return;
+
+    window.speechSynthesis.cancel();
+    const utterance = new SpeechSynthesisUtterance(answer.text);
+
+    // Language detection for voice model
+    if (answer.language === 'mr' || /[\u0900-\u097F]/.test(answer.text)) {
+      utterance.lang = 'mr-IN';
+    } else if (answer.language === 'hi') {
+      utterance.lang = 'hi-IN';
+    } else {
+      utterance.lang = 'en-IN';
+    }
+
+    utterance.rate = 0.95;
+    utterance.onend = () => setIsSpeaking(false);
+    utterance.onerror = () => setIsSpeaking(false);
+
+    setIsSpeaking(true);
+    window.speechSynthesis.speak(utterance);
+  };
 
   const handleCopy = () => {
     if (!answer.text) return;
@@ -242,6 +277,25 @@ export const AnswerRenderer: React.FC<AnswerRendererProps> = ({
           >
             {isBookmarked ? <BookmarkCheck size={13} style={{ color: 'var(--color-primary)' }} /> : <Bookmark size={13} />}
             <span>{isBookmarked ? 'Saved' : 'Save'}</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={handleToggleSpeech}
+            className="btn-ghost"
+            style={{
+              fontSize: '0.75rem',
+              padding: '0.2rem 0.5rem',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '4px',
+              color: isSpeaking ? 'var(--color-primary)' : 'inherit',
+              fontWeight: isSpeaking ? 600 : 'normal',
+            }}
+            title={isSpeaking ? 'Stop audio readout' : 'Listen to answer (Text-to-Speech)'}
+          >
+            {isSpeaking ? <VolumeX size={13} style={{ color: 'var(--color-primary)' }} /> : <Volume2 size={13} />}
+            <span>{isSpeaking ? 'Stop Audio' : 'Listen / ऑडिओ'}</span>
           </button>
         </div>
 

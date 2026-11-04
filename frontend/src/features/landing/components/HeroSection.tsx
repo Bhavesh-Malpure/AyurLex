@@ -8,11 +8,12 @@ interface HeroSectionProps {
 }
 
 const SAMPLE_QUERIES = [
+  'हळदीवर पेटंट घेता येईल का?',
   'Can I patent an Ayurvedic formulation?',
   'Is Ashwagandha extract patentable under Section 3(p)?',
-  'patent kaise karte hai?',
+  'भारतात पेटंट नोंदणीसाठी कोणते फॉर्म्स लागतात?',
+  'What is Section 3(d) of the Patents Act?',
   'What are Rule 158B licensing requirements for proprietary ASU drugs?',
-  'Does commercial utilization of turmeric trigger NBA approval?',
 ];
 
 export const HeroSection: React.FC<HeroSectionProps> = ({

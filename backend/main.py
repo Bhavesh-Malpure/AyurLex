@@ -15,6 +15,7 @@ from agent import (
     generate_grounded_answer_stream,
     detect_input_language,
     validate_and_sanitize_citations,
+    generate_contextual_synthesis,
 )
 from chunker import chunk_document_by_id
 from connectors.website_connector import (
@@ -80,57 +81,8 @@ def create_fast_answer(matched_chunks: list[dict], question: str = "") -> str:
     if direct_ans:
         return direct_ans
 
-    # 2. Extract key findings from verified evidence in clean human language
-    top_chunk = matched_chunks[0]
-    section_label = top_chunk.get("section_label", "")
-    content = re.sub(r"\s+", " ", top_chunk.get("content", "")).strip()
-    lang = detect_input_language(question)
-
-    # Clean direct synthesis without raw chunks or source tags
-    if "3(p)" in section_label or "traditional knowledge" in content.lower():
-        if lang in ("hindi", "hinglish"):
-            return (
-                "पारंपरिक ज्ञान या ज्ञात घटकों के मात्र समुच्चय (aggregation) को पेटेंट नहीं कराया जा सकता। "
-                "यदि उत्पाद में अप्रत्याशित सहक्रियाशील प्रभाव (synergistic effect) या नवीन निष्कर्षण तकनीक सिद्ध होती है, "
-                "तभी पेटेंट अनुदान संभव हो सकता है। आवेदन से पूर्व पूर्व-कला (prior-art) जांच अनिवार्य है।"
-            )
-        return (
-            "An invention that is in effect traditional knowledge or an aggregation of known properties of traditionally "
-            "known components is excluded from patentability. A patent may be considered only if there is a genuinely novel "
-            "technical feature, unexpected synergistic effect, or new process. Prior-art review is essential before filing."
-        )
-
-    if "rule 158b" in section_label.lower() or "158b" in content.lower():
-        if lang in ("hindi", "hinglish"):
-            return (
-                "आयुर्वेदिक, सिद्ध और यूनानी औषधियों के निर्माण लाइसेंस के लिए नियम 158B के तहत निर्धारित मानकों का अनुपालन अनिवार्य है। "
-                "शास्त्रीय योगों के लिए अधिकृत संहिताओं का संदर्भ तथा पेटेंट/स्वामित्व औषधियों के लिए सुरक्षा व प्रभावकारिता का वैज्ञानिक साक्ष्य आवश्यक होता है।"
-            )
-        return (
-            "Manufacturing approval for Ayurveda, Siddha, and Unani drugs requires compliance with statutory licensing conditions under Rule 158B. "
-            "Classical formulations require authoritative textual citations from official pharmacopoeias, while proprietary formulations require safety and efficacy proof."
-        )
-
-    if "biological diversity" in top_chunk.get("title", "").lower() or "section 6" in section_label.lower():
-        if lang in ("hindi", "hinglish"):
-            return (
-                "भारत के जैविक संसाधनों या संबंधित ज्ञान पर आधारित किसी भी आविष्कार के लिए देश या विदेश में पेटेंट आवेदन करने से पहले राष्ट्रीय जैव विविधता प्राधिकरण (NBA) से पूर्व-अनुमति लेना विधिक रूप से अनिवार्य है।"
-            )
-        return (
-            "Prior approval from the National Biodiversity Authority is mandatory before applying for any intellectual property right, inside or outside India, based on biological resources or associated knowledge obtained from India."
-        )
-
-    # General direct synthesis
-    if lang in ("hindi", "hinglish"):
-        return (
-            f"सत्यापित विधिक अनुसंधान के अनुसार, यह विषय {section_label or 'संबंधित विधिक प्रावधान'} द्वारा शासित होता है। "
-            f"इस प्रावधान के अंतर्गत निर्धारित विधिक शर्तों और अनुपालन मानदंडों का पालन करना अनिवार्य है।"
-        )
-
-    return (
-        f"Based on verified official legal research, this matter is governed by statutory provisions concerning {section_label or 'applicable IP/regulatory law'}. "
-        f"Compliance with the specified criteria and procedural conditions is required."
-    )
+    # 2. Generate question-specific statutory synthesis directly tailored to the user's inquiry
+    return generate_contextual_synthesis(question, matched_chunks)
 
 
 def format_sources(chunks: list[dict]) -> list[dict]:
