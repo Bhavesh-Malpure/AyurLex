@@ -1,11 +1,27 @@
+
 import React, { useState } from 'react';
-import { Eye, EyeOff, Leaf, ArrowRight, ShieldCheck } from 'lucide-react';
+import {
+  Eye,
+  EyeOff,
+  Leaf,
+  ArrowRight,
+  ShieldCheck,
+} from 'lucide-react';
+
+import {
+  createUserWithEmailAndPassword,
+  updateProfile,
+} from 'firebase/auth';
+
+import { auth } from '../../../firebase';
 
 interface RegisterPageProps {
   onNavigate: (route: string) => void;
 }
 
-export const RegisterPage: React.FC<RegisterPageProps> = ({ onNavigate }) => {
+export const RegisterPage: React.FC<RegisterPageProps> = ({
+  onNavigate,
+}) => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
@@ -15,9 +31,13 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onNavigate }) => {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [acceptedTerms, setAcceptedTerms] = useState(false);
-  const [feedback, setFeedback] = useState('');
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const [feedback, setFeedback] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleSubmit = async (
+    event: React.FormEvent<HTMLFormElement>
+  ) => {
     event.preventDefault();
     setFeedback('');
 
@@ -31,9 +51,58 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onNavigate }) => {
       return;
     }
 
-    setFeedback(
-      'The registration interface is ready. Backend account creation will be connected separately.'
-    );
+    if (password.length < 8) {
+      setFeedback('Password must contain at least 8 characters.');
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      // Create a new Firebase account
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        email.trim(),
+        password
+      );
+
+      // Save the user's full name in Firebase Auth profile
+      await updateProfile(userCredential.user, {
+        displayName: fullName.trim(),
+      });
+
+      setFeedback('Account created successfully! Welcome to Ayurlex.');
+
+      // Navigate to the application
+      onNavigate('landing');
+
+    } catch (error: any) {
+      console.error('Registration error:', error);
+
+      switch (error.code) {
+        case 'auth/email-already-in-use':
+          setFeedback('This email is already registered. Please login instead.');
+          break;
+
+        case 'auth/invalid-email':
+          setFeedback('Please enter a valid email address.');
+          break;
+
+        case 'auth/weak-password':
+          setFeedback('Your password is too weak. Please choose a stronger password.');
+          break;
+
+        case 'auth/network-request-failed':
+          setFeedback('Network error. Please check your internet connection.');
+          break;
+
+        default:
+          setFeedback(error.message || 'Registration failed. Please try again.');
+      }
+
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -48,7 +117,9 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onNavigate }) => {
           </div>
 
           <div className="auth-brand-message">
-            <span className="auth-eyebrow">DISCOVER • LEARN • INNOVATE</span>
+            <span className="auth-eyebrow">
+              DISCOVER • LEARN • INNOVATE
+            </span>
 
             <h1>
               Be part of the
@@ -85,6 +156,7 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onNavigate }) => {
           </div>
 
           <form onSubmit={handleSubmit} className="auth-form">
+
             <div className="auth-field">
               <label htmlFor="register-name">Full name</label>
               <input
@@ -150,11 +222,16 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onNavigate }) => {
                   {showPassword ? <EyeOff size={19} /> : <Eye size={19} />}
                 </button>
               </div>
-              <span className="auth-field-hint">Use at least 8 characters.</span>
+
+              <span className="auth-field-hint">
+                Use at least 8 characters.
+              </span>
             </div>
 
             <div className="auth-field">
-              <label htmlFor="register-confirm-password">Confirm password</label>
+              <label htmlFor="register-confirm-password">
+                Confirm password
+              </label>
 
               <div className="auth-password-wrapper">
                 <input
@@ -202,9 +279,13 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onNavigate }) => {
               </span>
             </label>
 
-            <button type="submit" className="auth-submit-button">
-              Create account
-              <ArrowRight size={18} />
+            <button
+              type="submit"
+              className="auth-submit-button"
+              disabled={isLoading}
+            >
+              {isLoading ? 'Creating account...' : 'Create account'}
+              {!isLoading && <ArrowRight size={18} />}
             </button>
 
             {feedback && (
@@ -216,7 +297,10 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onNavigate }) => {
 
           <div className="auth-switch">
             Already have an account?
-            <button type="button" onClick={() => onNavigate('login')}>
+            <button
+              type="button"
+              onClick={() => onNavigate('login')}
+            >
               Login
             </button>
           </div>

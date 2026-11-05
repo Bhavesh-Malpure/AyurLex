@@ -1,11 +1,20 @@
 import React from 'react';
-import { ArrowRight, Sparkles, BookOpen } from 'lucide-react';
+import { ArrowRight, Sparkles, BookOpen, Search } from 'lucide-react';
 import { JurisdictionStatus } from '../../jurisdiction/components/JurisdictionStatus';
 
 interface HeroSectionProps {
-  onStartResearch: () => void;
+  onStartResearch: (initialQuery?: string) => void;
   onOpenClassifier: () => void;
 }
+
+const SAMPLE_QUERIES = [
+  'हळदीवर पेटंट घेता येईल का?',
+  'Can I patent an Ayurvedic formulation?',
+  'Is Ashwagandha extract patentable under Section 3(p)?',
+  'भारतात पेटंट नोंदणीसाठी कोणते फॉर्म्स लागतात?',
+  'What is Section 3(d) of the Patents Act?',
+  'What are Rule 158B licensing requirements for proprietary ASU drugs?',
+];
 
 export const HeroSection: React.FC<HeroSectionProps> = ({
   onStartResearch,
@@ -50,7 +59,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
             lineHeight: 1.7,
           }}
         >
-          Specialized legal research assistant for Ayurvedic formulations, ASU regulatory compliance under the Drugs & Cosmetics Act, Traditional Knowledge (TKDL), Section 3(p) prior art verification, and ABS biodiversity filings.
+          Specialized statutory research assistant for Ayurvedic formulations, ASU regulatory compliance under the Drugs & Cosmetics Act, Traditional Knowledge (TKDL), Section 3(p) prior art verification, and ABS biodiversity filings.
         </p>
 
         {/* Action Buttons (F03: Start Research Button) */}
@@ -65,7 +74,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
         >
           <button
             type="button"
-            onClick={onStartResearch}
+            onClick={() => onStartResearch()}
             className="btn btn-primary"
             style={{
               padding: '0.75rem 1.5rem',
@@ -89,6 +98,37 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
             <Sparkles size={17} aria-hidden="true" style={{ color: 'var(--color-secondary)' }} />
             <span>Formulation Classifier Wizard</span>
           </button>
+        </div>
+
+        {/* Quick Sample Queries */}
+        <div style={{ marginTop: 'var(--space-6)' }}>
+          <div style={{ fontSize: '0.775rem', fontWeight: 600, color: 'var(--color-text-secondary)', marginBottom: 'var(--space-2)' }}>
+            Suggested Research Questions:
+          </div>
+          <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: 'var(--space-2)' }}>
+            {SAMPLE_QUERIES.map((q) => (
+              <button
+                key={q}
+                type="button"
+                onClick={() => onStartResearch(q)}
+                className="btn-ghost"
+                style={{
+                  fontSize: '0.75rem',
+                  padding: '0.35rem 0.75rem',
+                  backgroundColor: 'var(--color-surface-alt)',
+                  borderRadius: '16px',
+                  border: '1px solid var(--color-border)',
+                  color: 'var(--color-text-primary)',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                }}
+              >
+                <Search size={12} style={{ color: 'var(--color-primary)' }} />
+                <span>{q}</span>
+              </button>
+            ))}
+          </div>
         </div>
 
         {/* Informational assurance note */}

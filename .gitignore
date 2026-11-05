@@ -42,3 +42,4 @@ venv/
 /Ayurlex_Frontend_Implementation_Guide_for_Antigravity.docx
 /Dirstructure_frontend.txt
 frontend/tsconfig.tsbuildinfo
+.env.local

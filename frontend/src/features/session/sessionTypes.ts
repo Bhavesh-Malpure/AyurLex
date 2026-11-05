@@ -1,5 +1,5 @@
 export type Jurisdiction = 'india' | 'international';
-export type SupportedLanguage = 'en' | 'hi';
+export type SupportedLanguage = 'en' | 'hi' | 'mr';
 
 export interface FormulationClassificationSummary {
   hasClassicalReference?: boolean;
@@ -15,4 +15,5 @@ export interface SessionState {
   language: SupportedLanguage;
   classificationContext?: FormulationClassificationSummary;
   isComparisonActive: boolean;
+  showSources: boolean;
 }

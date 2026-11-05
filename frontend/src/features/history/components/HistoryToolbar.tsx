@@ -1,11 +1,12 @@
 import React from 'react';
-import { PlusCircle, RotateCcw, SplitSquareVertical } from 'lucide-react';
-import { sessionStore } from '../../session/sessionStore';
+import { PlusCircle, RotateCcw, SplitSquareVertical, Eye, EyeOff, Calculator } from 'lucide-react';
+import { sessionStore, useSession } from '../../session/sessionStore';
 
 interface HistoryToolbarProps {
   onNewSession: () => void;
   onToggleComparison: () => void;
   isComparisonActive: boolean;
+  onOpenTools?: () => void;
   className?: string;
 }
 
@@ -13,11 +14,18 @@ export const HistoryToolbar: React.FC<HistoryToolbarProps> = ({
   onNewSession,
   onToggleComparison,
   isComparisonActive,
+  onOpenTools,
   className = '',
 }) => {
+  const { showSources } = useSession();
+
   const handleNewResearch = () => {
     sessionStore.resetSession();
     onNewSession();
+  };
+
+  const handleToggleSources = () => {
+    sessionStore.toggleShowSources();
   };
 
   return (
@@ -53,6 +61,42 @@ export const HistoryToolbar: React.FC<HistoryToolbarProps> = ({
         >
           <SplitSquareVertical size={14} />
           <span>{isComparisonActive ? 'Close Comparison' : 'Compare Jurisdictions'}</span>
+        </button>
+
+        {onOpenTools && (
+          <button
+            type="button"
+            onClick={onOpenTools}
+            className="btn btn-secondary"
+            style={{
+              fontSize: '0.8125rem',
+              padding: '0.35rem 0.75rem',
+              borderColor: 'var(--color-primary)',
+              color: 'var(--color-primary)',
+              fontWeight: 600,
+            }}
+            title="Open Academic Search, Statutory Deadline & Fee Calculators, and Vector Retrieval"
+          >
+            <Calculator size={14} />
+            <span>Research Tools</span>
+          </button>
+        )}
+
+        {/* Setting: Show Sources (default OFF) */}
+        <button
+          type="button"
+          onClick={handleToggleSources}
+          className={`btn ${showSources ? 'btn-primary' : 'btn-secondary'}`}
+          style={{
+            fontSize: '0.8125rem',
+            padding: '0.35rem 0.75rem',
+            backgroundColor: showSources ? 'var(--color-primary)' : 'var(--color-surface)',
+            color: showSources ? 'var(--color-text-inverse)' : 'var(--color-text-secondary)',
+          }}
+          title={showSources ? 'Citations visible. Click to hide.' : 'Citations hidden. Click to show.'}
+        >
+          {showSources ? <Eye size={14} /> : <EyeOff size={14} />}
+          <span>Show Sources: {showSources ? 'ON' : 'OFF'}</span>
         </button>
       </div>
 

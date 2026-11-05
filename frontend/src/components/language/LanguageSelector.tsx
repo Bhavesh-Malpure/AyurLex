@@ -61,6 +61,7 @@ export const LanguageSelector: React.FC<LanguageSelectorProps> = ({ className = 
       >
         <option value="en">English (EN)</option>
         <option value="hi">हिंदी (HI)</option>
+        <option value="mr">मराठी (MR)</option>
       </select>
     </div>
   );

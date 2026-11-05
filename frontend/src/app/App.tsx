@@ -1,4 +1,7 @@
-import React, { useState } from 'react';
+
+import React, { useEffect, useState } from 'react';
+
+import { AuthProvider, useAuth } from '../context/AuthContext';
 
 import { AppHeader } from '../components/layout/AppHeader';
 import { DisclaimerBanner } from '../components/legal/DisclaimerBanner';
@@ -28,13 +31,11 @@ import { RegisterPage } from '../features/auth/pages/RegisterPage';
 
 import '../features/auth/auth.css';
 
-export const App: React.FC = () => {
-  const [currentRoute, setCurrentRoute] = useState<string>('landing');
-  const [isComparisonOpen, setIsComparisonOpen] = useState(false);
+const AppContent: React.FC = () => {
+  const { user, loading } = useAuth();
 
-  // Check whether the current page is an authentication page
-  const isAuthRoute =
-    currentRoute === 'login' || currentRoute === 'register';
+  const [currentRoute, setCurrentRoute] = useState<string>('login');
+  const [isComparisonOpen, setIsComparisonOpen] = useState(false);
 
   const {
     messages,
@@ -49,6 +50,33 @@ export const App: React.FC = () => {
   } = useChatSession();
 
   const { sessionId } = useSession();
+
+  // Automatically manage navigation when authentication changes
+  useEffect(() => {
+    if (loading) return;
+
+    if (user) {
+      // Authenticated users should enter the main application
+      if (
+        currentRoute === 'login' ||
+        currentRoute === 'register'
+      ) {
+        setCurrentRoute('landing');
+      }
+    } else {
+      // Unauthenticated users must return to Login
+      setCurrentRoute((previousRoute) => {
+        if (
+          previousRoute === 'login' ||
+          previousRoute === 'register'
+        ) {
+          return previousRoute;
+        }
+
+        return 'login';
+      });
+    }
+  }, [user, loading, currentRoute]);
 
   // Start research workspace
   const handleStartResearch = (initialQuery?: string) => {
@@ -69,6 +97,58 @@ export const App: React.FC = () => {
     setIsComparisonOpen((prev) => !prev);
   };
 
+  // ======================================
+  // AUTHENTICATION LOADING
+  // ======================================
+
+  if (loading) {
+    return (
+      <div className="app-shell">
+        <main
+          className="main-content"
+          style={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            minHeight: '100vh',
+          }}
+        >
+          <p>Loading Ayurlex...</p>
+        </main>
+      </div>
+    );
+  }
+
+  // ======================================
+  // LOGIN / REGISTER FOR UNAUTHENTICATED USERS
+  // ======================================
+
+  if (!user) {
+    return (
+      <div className="app-shell">
+        <main
+          className="main-content"
+          id="main-content"
+          tabIndex={-1}
+        >
+          {currentRoute === 'register' ? (
+            <RegisterPage
+              onNavigate={setCurrentRoute}
+            />
+          ) : (
+            <LoginPage
+              onNavigate={setCurrentRoute}
+            />
+          )}
+        </main>
+      </div>
+    );
+  }
+
+  // ======================================
+  // MAIN APPLICATION FOR AUTHENTICATED USERS
+  // ======================================
+
   return (
     <div className="app-shell">
 
@@ -76,39 +156,14 @@ export const App: React.FC = () => {
           GLOBAL HEADER AND NAVIGATION
       ====================================== */}
 
-      {!isAuthRoute && (
-        <>
-          {/* Persistent Legal Disclaimer */}
-          <DisclaimerBanner variant="global" />
+      {/* Persistent Legal Disclaimer */}
+      <DisclaimerBanner variant="global" />
 
-          {/* Main Application Header */}
-          <AppHeader
-            currentRoute={currentRoute}
-            onNavigate={(route) => setCurrentRoute(route)}
-          />
-
-          {/* Authentication Navigation */}
-          <div className="auth-navigation">
-
-            <button
-              type="button"
-              className="auth-nav-login"
-              onClick={() => setCurrentRoute('login')}
-            >
-              Login
-            </button>
-
-            <button
-              type="button"
-              className="auth-nav-register"
-              onClick={() => setCurrentRoute('register')}
-            >
-              Create account
-            </button>
-
-          </div>
-        </>
-      )}
+      {/* Main Application Header */}
+      <AppHeader
+        currentRoute={currentRoute}
+        onNavigate={(route) => setCurrentRoute(route)}
+      />
 
       {/* ======================================
           MAIN CONTENT
@@ -119,20 +174,6 @@ export const App: React.FC = () => {
         id="main-content"
         tabIndex={-1}
       >
-
-        {/* LOGIN PAGE */}
-        {currentRoute === 'login' && (
-          <LoginPage
-            onNavigate={setCurrentRoute}
-          />
-        )}
-
-        {/* REGISTER PAGE */}
-        {currentRoute === 'register' && (
-          <RegisterPage
-            onNavigate={setCurrentRoute}
-          />
-        )}
 
         {/* LANDING PAGE */}
         {currentRoute === 'landing' && (
@@ -300,96 +341,104 @@ export const App: React.FC = () => {
           CITATION SOURCE DETAILS
       ====================================== */}
 
-      {!isAuthRoute && (
-        <SourceDetailsDialog
-          citation={selectedCitation}
-          isOpen={isCitationDialogOpen}
-          onClose={closeCitation}
-        />
-      )}
+      <SourceDetailsDialog
+        citation={selectedCitation}
+        isOpen={isCitationDialogOpen}
+        onClose={closeCitation}
+      />
 
       {/* ======================================
           FOOTER
       ====================================== */}
 
-      {!isAuthRoute && (
-        <footer
-          role="contentinfo"
+      <footer
+        role="contentinfo"
+        style={{
+          borderTop: '1px solid var(--color-border)',
+          backgroundColor: 'var(--color-surface)',
+          padding: 'var(--space-6) 0',
+          fontSize: '0.8125rem',
+          color: 'var(--color-text-secondary)',
+          marginTop: 'auto',
+        }}
+      >
+
+        <div
+          className="container-wide"
           style={{
-            borderTop: '1px solid var(--color-border)',
-            backgroundColor: 'var(--color-surface)',
-            padding: 'var(--space-6) 0',
-            fontSize: '0.8125rem',
-            color: 'var(--color-text-secondary)',
-            marginTop: 'auto',
+            display: 'flex',
+            flexWrap: 'wrap',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            gap: 'var(--space-4)',
           }}
         >
 
+          <div>
+            <strong>Ayurlex</strong> · AI-Powered Ayurveda IPR & Regulatory Intelligence
+
+            <div
+              style={{
+                fontSize: '0.75rem',
+                color: 'var(--color-text-tertiary)',
+              }}
+            >
+              Active Session ID:{' '}
+              <code style={{ fontSize: '0.7rem' }}>
+                {sessionId}
+              </code>
+            </div>
+          </div>
+
           <div
-            className="container-wide"
             style={{
               display: 'flex',
-              flexWrap: 'wrap',
-              alignItems: 'center',
-              justifyContent: 'space-between',
               gap: 'var(--space-4)',
             }}
           >
 
-            <div>
-              <strong>Ayurlex</strong> · AI-Powered Ayurveda IPR & Regulatory Intelligence
-
-              <div
-                style={{
-                  fontSize: '0.75rem',
-                  color: 'var(--color-text-tertiary)',
-                }}
-              >
-                Active Session ID:{' '}
-                <code style={{ fontSize: '0.7rem' }}>
-                  {sessionId}
-                </code>
-              </div>
-            </div>
-
-            <div
+            <button
+              type="button"
+              onClick={() => setCurrentRoute('compliance')}
+              className="btn-ghost"
               style={{
-                display: 'flex',
-                gap: 'var(--space-4)',
+                fontSize: '0.8rem',
+                padding: 0,
               }}
             >
+              ABS & TKDL Mandates
+            </button>
 
-              <button
-                type="button"
-                onClick={() => setCurrentRoute('compliance')}
-                className="btn-ghost"
-                style={{
-                  fontSize: '0.8rem',
-                  padding: 0,
-                }}
-              >
-                ABS & TKDL Mandates
-              </button>
-
-              <button
-                type="button"
-                onClick={() => setCurrentRoute('admin')}
-                className="btn-ghost"
-                style={{
-                  fontSize: '0.8rem',
-                  padding: 0,
-                }}
-              >
-                Corpus Health
-              </button>
-
-            </div>
+            <button
+              type="button"
+              onClick={() => setCurrentRoute('admin')}
+              className="btn-ghost"
+              style={{
+                fontSize: '0.8rem',
+                padding: 0,
+              }}
+            >
+              Corpus Health
+            </button>
 
           </div>
 
-        </footer>
-      )}
+        </div>
+
+      </footer>
 
     </div>
+  );
+};
+
+// ======================================
+// ROOT APP WITH AUTH PROVIDER
+// ======================================
+
+export const App: React.FC = () => {
+  return (
+    <AuthProvider>
+      <AppContent />
+    </AuthProvider>
   );
 };

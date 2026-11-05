@@ -1,22 +1,99 @@
+
 import React, { useState } from 'react';
-import { Eye, EyeOff, Leaf, ArrowRight, ShieldCheck } from 'lucide-react';
+import {
+  Eye,
+  EyeOff,
+  Leaf,
+  ArrowRight,
+  ShieldCheck,
+} from 'lucide-react';
+
+import {
+  signInWithEmailAndPassword,
+  setPersistence,
+  browserLocalPersistence,
+  browserSessionPersistence,
+} from 'firebase/auth';
+
+import { auth } from '../../../firebase';
 
 interface LoginPageProps {
   onNavigate: (route: string) => void;
 }
 
-export const LoginPage: React.FC<LoginPageProps> = ({ onNavigate }) => {
+export const LoginPage: React.FC<LoginPageProps> = ({
+  onNavigate,
+}) => {
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [feedback, setFeedback] = useState('');
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const [feedback, setFeedback] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleSubmit = async (
+    event: React.FormEvent<HTMLFormElement>
+  ) => {
     event.preventDefault();
-    setFeedback(
-      'The login interface is ready. Backend authentication will be connected separately.'
-    );
+    setFeedback('');
+    setIsLoading(true);
+
+    try {
+      // Set the authentication persistence
+      await setPersistence(
+        auth,
+        rememberMe
+          ? browserLocalPersistence
+          : browserSessionPersistence
+      );
+
+      // Authenticate user with Firebase
+      await signInWithEmailAndPassword(
+        auth,
+        email.trim(),
+        password
+      );
+
+      setFeedback('Login successful! Welcome back.');
+
+      // Navigate to the application
+      onNavigate('landing');
+
+    } catch (error: any) {
+      console.error('Login error:', error);
+
+      switch (error.code) {
+        case 'auth/invalid-email':
+          setFeedback('Please enter a valid email address.');
+          break;
+
+        case 'auth/invalid-credential':
+        case 'auth/user-not-found':
+        case 'auth/wrong-password':
+          setFeedback('Invalid email or password. Please try again.');
+          break;
+
+        case 'auth/user-disabled':
+          setFeedback('This account has been disabled.');
+          break;
+
+        case 'auth/too-many-requests':
+          setFeedback('Too many attempts. Please try again later.');
+          break;
+
+        case 'auth/network-request-failed':
+          setFeedback('Network error. Please check your internet connection.');
+          break;
+
+        default:
+          setFeedback(error.message || 'Login failed. Please try again.');
+      }
+
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -31,7 +108,9 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onNavigate }) => {
           </div>
 
           <div className="auth-brand-message">
-            <span className="auth-eyebrow">AYURVEDA • INTELLECTUAL PROPERTY • INNOVATION</span>
+            <span className="auth-eyebrow">
+              AYURVEDA • INTELLECTUAL PROPERTY • INNOVATION
+            </span>
 
             <h1>
               Knowledge deserves
@@ -68,6 +147,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onNavigate }) => {
           </div>
 
           <form onSubmit={handleSubmit} className="auth-form">
+
             <div className="auth-field">
               <label htmlFor="login-email">Email address</label>
               <input
@@ -120,16 +200,20 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onNavigate }) => {
                 type="button"
                 className="auth-text-button"
                 onClick={() =>
-                  setFeedback('Password recovery will be available once the backend is connected.')
+                  setFeedback('Password recovery will be implemented next.')
                 }
               >
                 Forgot password?
               </button>
             </div>
 
-            <button type="submit" className="auth-submit-button">
-              Login
-              <ArrowRight size={18} />
+            <button
+              type="submit"
+              className="auth-submit-button"
+              disabled={isLoading}
+            >
+              {isLoading ? 'Signing in...' : 'Login'}
+              {!isLoading && <ArrowRight size={18} />}
             </button>
 
             {feedback && (
@@ -141,7 +225,10 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onNavigate }) => {
 
           <div className="auth-switch">
             Don't have an account?
-            <button type="button" onClick={() => onNavigate('register')}>
+            <button
+              type="button"
+              onClick={() => onNavigate('register')}
+            >
               Create an account
             </button>
           </div>

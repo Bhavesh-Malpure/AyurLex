@@ -12,7 +12,9 @@
   font-family: inherit;
 }
 
-/* BRAND PANEL */
+/* =========================================
+   BRAND PANEL
+========================================= */
 
 .auth-brand-panel {
   position: relative;
@@ -125,7 +127,9 @@
   top: 3%;
 }
 
-/* FORM PANEL */
+/* =========================================
+   FORM PANEL
+========================================= */
 
 .auth-form-panel {
   display: flex;
@@ -239,7 +243,9 @@
   font-weight: 400;
 }
 
-/* CHECKBOXES AND LINKS */
+/* =========================================
+   CHECKBOXES AND LINKS
+========================================= */
 
 .auth-form-options {
   display: flex;
@@ -299,7 +305,9 @@
   text-decoration: underline;
 }
 
-/* SUBMIT BUTTON */
+/* =========================================
+   SUBMIT BUTTON
+========================================= */
 
 .auth-submit-button {
   display: flex;
@@ -326,6 +334,12 @@
   transform: translateY(-1px);
 }
 
+.auth-submit-button:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+  transform: none;
+}
+
 .auth-submit-button:focus-visible,
 .auth-password-toggle:focus-visible,
 .auth-text-button:focus-visible,
@@ -344,7 +358,9 @@
   line-height: 1.6;
 }
 
-/* BOTTOM TEXT */
+/* =========================================
+   BOTTOM TEXT
+========================================= */
 
 .auth-switch {
   display: flex;
@@ -369,7 +385,9 @@
   display: none;
 }
 
-/* REGISTER PAGE */
+/* =========================================
+   REGISTER PAGE
+========================================= */
 
 .auth-register-container {
   max-width: 455px;
@@ -395,7 +413,61 @@
   min-height: 49px;
 }
 
-/* RESPONSIVE DESIGN */
+/* =========================================
+   MAIN WEBSITE AUTHENTICATION NAVIGATION
+========================================= */
+
+.auth-navigation {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 12px 5%;
+  background-color: #ffffff;
+  border-bottom: 1px solid #e5ebe7;
+}
+
+.auth-navigation .auth-nav-login,
+.auth-navigation .auth-nav-register {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 40px;
+  padding: 9px 20px;
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.auth-navigation .auth-nav-login {
+  background-color: #ffffff;
+  color: #0f5132;
+  border: 1px solid #0f5132;
+}
+
+.auth-navigation .auth-nav-login:hover {
+  background-color: #e8f5ee;
+}
+
+.auth-navigation .auth-nav-register {
+  background-color: #0f5132;
+  color: #ffffff;
+  border: 1px solid #0f5132;
+}
+
+.auth-navigation .auth-nav-register:hover {
+  background-color: #2e7d5b;
+  border-color: #2e7d5b;
+}
+
+/* =========================================
+   RESPONSIVE DESIGN
+========================================= */
 
 @media (max-width: 900px) {
   .auth-page {
@@ -455,6 +527,10 @@
   .auth-register-container .auth-form {
     gap: 17px;
   }
+
+  .auth-navigation {
+    padding: 10px 17px;
+  }
 }
 
 @media (max-width: 380px) {
@@ -469,53 +545,5 @@
 
   .auth-text-button {
     font-size: 0.78rem;
-  }
-}
-/* Authentication links on the main website */
-
-.auth-navigation {
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-  gap: 12px;
-  padding: 10px 5%;
-  background: #ffffff;
-  border-bottom: 1px solid #e5ebe7;
-}
-
-.auth-nav-login,
-.auth-nav-register {
-  padding: 9px 18px;
-  border-radius: 8px;
-  font: inherit;
-  font-size: 0.85rem;
-  font-weight: 650;
-  cursor: pointer;
-  transition: 0.2s ease;
-}
-
-.auth-nav-login {
-  border: 1px solid #0f5132;
-  background: #ffffff;
-  color: #0f5132;
-}
-
-.auth-nav-login:hover {
-  background: #e8f5ee;
-}
-
-.auth-nav-register {
-  border: 1px solid #0f5132;
-  background: #0f5132;
-  color: #ffffff;
-}
-
-.auth-nav-register:hover {
-  background: #2e7d5b;
-}
-
-@media (max-width: 680px) {
-  .auth-navigation {
-    padding: 10px 17px;
   }
 }

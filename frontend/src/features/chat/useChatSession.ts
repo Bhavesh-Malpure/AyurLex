@@ -32,55 +32,144 @@ export function useChatSession() {
         text,
       };
 
+      const asstMessageId = `asst_${Date.now() + 1}`;
+      let accumulatedText = '';
+      let receivedCitations: Citation[] = [];
+
       setMessages((prev) => [...prev, userMessage]);
       setStage('searching');
       setErrorMessage(undefined);
 
       try {
-        // Stage progress animation for realistic research steps
-        setTimeout(() => setStage('analyzing'), 800);
-        setTimeout(() => setStage('verifying_citations'), 1600);
-
-        const response = await apiClient.submitResearchQuery({
-          question: text,
-          jurisdiction,
-          language,
-          sessionId,
-        });
-
-        // Formulate assistant message with typed AnswerData
-        const assistantMessage: ChatMessage = {
-          id: `asst_${Date.now()}`,
-          sender: 'assistant',
-          timestamp: new Date().toISOString(),
-          answerData: {
-            text:
-              response.answer ||
-              `Analysis of "${text}" scoped under ${
-                jurisdiction === 'india' ? 'Indian ASU statutory law' : 'international IPR'
-              }:\n\n` +
-                (response.research_plan
-                  ? `Research Strategy:\n${JSON.stringify(response.research_plan, null, 2)}`
-                  : 'Referenced primary statutory sources and pharmacopoeial listings below.'),
-            confidence: response.confidence || 'medium',
-            isAbstained: response.is_abstained || false,
-            citations: response.citations,
+        // Attempt progressive SSE streaming first
+        await apiClient.streamResearchQuery(
+          {
+            question: text,
             jurisdiction,
             language,
-            asOfDate: 'Gazette of India (2024)',
+            sessionId,
+            responseMode: 'fast',
           },
-        };
+          {
+            onStatus: (stg) => {
+              if (stg === 'researching_sources') setStage('searching');
+              else if (stg === 'generating_detailed_answer') setStage('analyzing');
+            },
+            onFastAnswer: (data) => {
+              accumulatedText = data.summary;
+              receivedCitations = data.sources || [];
 
-        setMessages((prev) => [...prev, assistantMessage]);
-        setStage('idle');
-      } catch (err: any) {
-        // Safe user-facing error without leaking server stack trace
-        setStage('error');
-        setErrorMessage(
-          err?.message?.includes('fetch')
-            ? 'Backend API server is currently unreachable. Make sure the FastAPI service on port 8000 is running.'
-            : 'An error occurred while evaluating statutory sources. Please try again.'
+              setMessages((prev) => {
+                const filtered = prev.filter((m) => m.id !== asstMessageId);
+                return [
+                  ...filtered,
+                  {
+                    id: asstMessageId,
+                    sender: 'assistant',
+                    timestamp: new Date().toISOString(),
+                    answerData: {
+                      text: accumulatedText,
+                      citations: receivedCitations,
+                      confidence: data.confidence as any,
+                      isAbstained: data.isAbstained,
+                      jurisdiction,
+                      language,
+                      asOfDate: 'Gazette of India (2024)',
+                    },
+                  },
+                ];
+              });
+            },
+            onToken: (token) => {
+              accumulatedText += token;
+              setMessages((prev) => {
+                const filtered = prev.filter((m) => m.id !== asstMessageId);
+                return [
+                  ...filtered,
+                  {
+                    id: asstMessageId,
+                    sender: 'assistant',
+                    timestamp: new Date().toISOString(),
+                    answerData: {
+                      text: accumulatedText,
+                      citations: receivedCitations,
+                      confidence: 'high',
+                      isAbstained: false,
+                      jurisdiction,
+                      language,
+                      asOfDate: 'Gazette of India (2024)',
+                    },
+                  },
+                ];
+              });
+            },
+            onComplete: (data) => {
+              setMessages((prev) => {
+                const filtered = prev.filter((m) => m.id !== asstMessageId);
+                return [
+                  ...filtered,
+                  {
+                    id: asstMessageId,
+                    sender: 'assistant',
+                    timestamp: new Date().toISOString(),
+                    answerData: {
+                      text: data.answer || accumulatedText,
+                      citations: data.sources.length > 0 ? data.sources : receivedCitations,
+                      confidence: data.confidence,
+                      isAbstained: data.isAbstained,
+                      jurisdiction,
+                      language,
+                      asOfDate: 'Gazette of India (2024)',
+                    },
+                  },
+                ];
+              });
+              setStage('idle');
+            },
+            onError: (err) => {
+              throw err;
+            },
+          }
         );
+      } catch (streamErr) {
+        // Fallback to standard HTTP POST /query if streaming encounters any network issue
+        console.warn('Streaming blip, falling back to synchronous /query:', streamErr);
+        try {
+          const response = await apiClient.submitResearchQuery({
+            question: text,
+            jurisdiction,
+            language,
+            sessionId,
+          });
+
+          const assistantMessage: ChatMessage = {
+            id: asstMessageId,
+            sender: 'assistant',
+            timestamp: new Date().toISOString(),
+            answerData: {
+              text: response.answer || 'I could not verify a reliable answer from the available official research sources.',
+              confidence: response.confidence || 'medium',
+              isAbstained: response.is_abstained || false,
+              citations: response.citations,
+              jurisdiction,
+              language,
+              asOfDate: 'Gazette of India (2024)',
+            },
+          };
+
+          setMessages((prev) => {
+            const filtered = prev.filter((m) => m.id !== asstMessageId);
+            return [...filtered, assistantMessage];
+          });
+          setStage('idle');
+        } catch (fetchErr: any) {
+          setStage('error');
+          setErrorMessage(
+            fetchErr?.message?.includes('fetch') || fetchErr?.message?.includes('network')
+              ? 'FastAPI backend server is currently unreachable on localhost:8000. Start it by running: npm run backend'
+              : 'An error occurred while evaluating statutory sources. Please try again.'
+          );
+        }
       }
     },
     [jurisdiction, language, sessionId]
